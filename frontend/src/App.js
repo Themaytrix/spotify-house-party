@@ -8,11 +8,13 @@ import Hompage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import Header from "./components/Header";
 import PrivateRoute from "./utils/PrivateRoute";
+import { AuthProvider } from "./context/AuthContext";
 
 function App() {
   let user
   return (
     <Router>
+      <AuthProvider>
       <div className="App">
         <Header/>
       <Routes>
@@ -23,6 +25,7 @@ function App() {
         <Route path="/login" element={<LoginPage/>}/>
       </Routes>
       </div>
+      </AuthProvider>
     </Router>
   );
 }
