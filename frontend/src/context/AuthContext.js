@@ -20,12 +20,12 @@ export const AuthProvider = ({children}) => {
     // fetching user data from dj backend
     let loginUser = async (e) =>{
         e.preventDefault()
-        let response = await fetch('http://127.0.0.1:8000/accounts/api/token/',{
+        let response = await fetch('http://127.0.0.1:8000/users/api/token/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
             },
-            body: JSON.stringify({'username':e.target.username.value, 'password':e.target.password.value})
+            body: JSON.stringify({'email':e.target.email.value, 'password':e.target.password.value})
         })
 
         let data = await response.json()
@@ -36,8 +36,22 @@ export const AuthProvider = ({children}) => {
             navigate("/")
         }
 
-        console.log('data:', data)
-        console.log(user)
+
+    }
+
+    // signup
+    let signupUser = async (e) =>{
+        e.preventDefault()
+        let response = await fetch('http://127.0.0.1:8000/users/',{
+            method: 'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body: JSON.stringify({'username':e.target.username.value, 'password':e.target.password.value, 'email':e.target.email.value})
+        })
+        if(response.status === 201){
+            navigate('/login')
+        }
     }
 
     // logout
@@ -52,12 +66,12 @@ export const AuthProvider = ({children}) => {
     // updateToken
 
     let updateToken = async () =>{
-        let response = await fetch('http://127.0.0.1:8000/accounts/api/token/refresh',{
+        let response = await fetch('http://127.0.0.1:8000/users/api/token/refresh/',{
             method:'POST',
             headers:{
                 'Content-Type':'application/json'
             },
-            body: JSON.stringify({'refresh':authTokens.refresh})
+            body: JSON.stringify({'refresh':authTokens?.refresh})
         })
         let data = await response.json()
         if(response.status === 200){
@@ -67,6 +81,10 @@ export const AuthProvider = ({children}) => {
         }else{
             logoutUser()
         }
+
+        if(loading){
+            setLoading(false)
+        }
     }
 
 
@@ -75,20 +93,28 @@ export const AuthProvider = ({children}) => {
         user:user,
         loginUser:loginUser,
         logoutUser:logoutUser,
+        signupUser:signupUser,
     }
 
     useEffect(()=>{
+
+        if(loading){
+            updateToken()
+        }
+
+        let refresTime = 1000 * 60 * 4
         let interval = setInterval(()=>{
             if(authTokens){
                 updateToken()
             }
-        },2000)
+        },refresTime)
         return ()=> clearInterval(interval)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     },[authTokens,loading])
 
     return(
         <AuthContext.Provider value={contextData}>
-            {children}
+            {loading ? null : children}
         </AuthContext.Provider>
     )
 } 

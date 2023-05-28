@@ -7,6 +7,7 @@ import './App.css';
 import Hompage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import Header from "./components/Header";
+import SignupPage from "./pages/SignupPage";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 
@@ -23,6 +24,8 @@ function App() {
             <Hompage/>
           </PrivateRoute>} />
         <Route path="/login" element={<LoginPage/>}/>
+        <Route path="/register" element={<SignupPage/>}/>
+
       </Routes>
       </div>
       </AuthProvider>
