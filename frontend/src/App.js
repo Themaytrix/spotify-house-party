@@ -10,6 +10,7 @@ import Header from "./components/Header";
 import SignupPage from "./pages/SignupPage";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
+import CreateRoom from "./pages/CreateRoom";
 
 function App() {
   let user
@@ -25,6 +26,7 @@ function App() {
           </PrivateRoute>} />
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/register" element={<SignupPage/>}/>
+        <Route path="/create" element={<CreateRoom/>}/>
 
       </Routes>
       </div>

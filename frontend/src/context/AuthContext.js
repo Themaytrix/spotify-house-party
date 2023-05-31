@@ -16,6 +16,7 @@ export const AuthProvider = ({children}) => {
     let navigate = useNavigate()
 
     let [loading,setLoading] = useState(true)
+    let [room,setRoom] = useState(null)
 
     // fetching user data from dj backend
     let loginUser = async (e) =>{
@@ -87,13 +88,37 @@ export const AuthProvider = ({children}) => {
         }
     }
 
+    //creating room
+    let createRoom = async (e)=>{
+        e.preventDefault()
+
+        let response = await fetch('http://127.0.0.1:8000/api/create/',{
+            method: "POST",
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer' + String(authTokens.access)
+            },
+            body: JSON.stringify({'name':e.target.name.value, 'votes-to-skip': e.target.votes_to_skip.value})
+        })
+
+        let data = await response.json()
+        if(response.status === 200){
+            setRoom(data)
+            navigate("/")
+        }
+
+    }
+
 
     // setting contextdata
     let contextData = {
         user:user,
+        room:room,
         loginUser:loginUser,
         logoutUser:logoutUser,
         signupUser:signupUser,
+        createRoom:createRoom,
+
     }
 
     useEffect(()=>{
