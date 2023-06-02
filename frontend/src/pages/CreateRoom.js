@@ -7,7 +7,7 @@ let {createRoom} = useContext(AuthContext)
     return(
         <div>
             <form onSubmit={createRoom}>
-                <input type="text" name="room-name" placeholder="Room name"  />
+                <input type="text" name="room_name" placeholder="Room name"  />
                 <input type="number" name="votes_to_skip" />
                 <input type="submit" value="Create Room"/>
             </form>

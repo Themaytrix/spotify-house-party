@@ -10,6 +10,7 @@ export default AuthContext;
 
 export const AuthProvider = ({children}) => {
     // setting user states
+    
     let [user,setUser] = useState(() => localStorage.getItem('authTokens') ? jwt_decode(localStorage.getItem('authTokens')) : null)
     // setting auth tokens
     let [authTokens, setAuthTokens] = useState(() => localStorage.getItem('authTokens') ? JSON.parse(localStorage.getItem('authTokens')) : null)
@@ -33,8 +34,10 @@ export const AuthProvider = ({children}) => {
         if(response.status === 200){
             setAuthTokens(data)
             setUser(jwt_decode(data.access))
+            
             localStorage.setItem('authTokens',JSON.stringify(data))
             navigate("/")
+        
         }
 
 
@@ -96,11 +99,11 @@ export const AuthProvider = ({children}) => {
             method: "POST",
             headers:{
                 'Content-Type':'application/json',
-                'Authorization': 'Bearer' + String(authTokens.access)
+                'Authorization': 'Bearer ' + String(authTokens.access)
             },
-            body: JSON.stringify({'name':e.target.name.value, 'votes-to-skip': e.target.votes_to_skip.value})
+            body: JSON.stringify({'name':e.target.room_name.value, 'votes_to_skip': Number(e.target.votes_to_skip.value)})
         })
-
+        console.log(Number(e.target.votes_to_skip.value))
         let data = await response.json()
         if(response.status === 200){
             setRoom(data)
@@ -114,6 +117,7 @@ export const AuthProvider = ({children}) => {
     let contextData = {
         user:user,
         room:room,
+        authTokens:authTokens,
         loginUser:loginUser,
         logoutUser:logoutUser,
         signupUser:signupUser,
