@@ -20,6 +20,7 @@ export default function Room(){
         }
     }
 
+
     
 // use effect to render rooms. dependency to be number of rooms available
     useEffect(()=>{
@@ -30,7 +31,8 @@ export default function Room(){
     return(
         <div>
             {rooms.map((room)=>(
-                <RoomItem room = {room}/>
+                <RoomItem key={room.id_session} 
+                room = {room}/>
             ))}
         </div>
     )

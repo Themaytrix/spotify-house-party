@@ -31,3 +31,8 @@ class Room(models.Model):
     
     def __str__(self) -> str:
         return self.name
+    
+class Listeners(models.Model):
+    active_room = models.ForeignKey(Room,on_delete=models.CASCADE)
+    listener = models.ForeignKey(Newuser,on_delete=models.CASCADE)
+    

@@ -2,7 +2,7 @@ from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse
 from rest_framework import generics
 from .models import Room
-from .serializers import RoomSerializer,CreateRoomSerializer
+from .serializers import RoomSerializer,CreateRoomSerializer,JoinRoomSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -58,16 +58,20 @@ class CreateRoom(APIView):
         return Response({'Bad Request':'Invalid data'}, status=status.HTTP_400_BAD_REQUEST)
 
 class JoinRoom(APIView):
-    def post(self, request, format=None):
+    def post(self, request, pk, format=None):
         if not self.request.session.exists(self.request.session.session_key):
             self.request.session.create()
-    
-        # lookup for session available in database
         
-        # serialize data
-        # check if serializer is valid
-        # want to create a session value for current room. 
-        # redirected to room id
+        serializer = JoinRoomSerializer(data=request.data)
+        
+        serializer.is_valid(raise_exception=True)
+        id_session = serializer.validated_data.get('id_session')
+            
+        try:
+            room = Room.objects.get(id_session=id_session)
+            return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
+        except Room.DoesNotExist():
+            return Response({'Room does not exist'}, status=status.HTTP_404_NOT_FOUND)
             
             
             

@@ -14,7 +14,7 @@ class CreateRoomSerializer(serializers.ModelSerializer):
         fields = ('name','votes_to_skip')
         
 
-class JoinRoomSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Room
-        fields = ('id_session',)
+class JoinRoomSerializer(serializers.Serializer):
+    id_session = serializers.CharField(max_length=50)
+        
+    

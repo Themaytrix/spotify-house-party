@@ -11,6 +11,7 @@ import SignupPage from "./pages/SignupPage";
 import PrivateRoute from "./utils/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import CreateRoom from "./pages/CreateRoom";
+import ListeningPage from "./pages/ListeningPage";
 
 function App() {
   let user
@@ -27,6 +28,7 @@ function App() {
         <Route path="/login" element={<LoginPage/>}/>
         <Route path="/register" element={<SignupPage/>}/>
         <Route path="/create" element={<CreateRoom/>}/>
+        <Route path="/:id" element={<ListeningPage/>}/>
 
       </Routes>
       </div>
