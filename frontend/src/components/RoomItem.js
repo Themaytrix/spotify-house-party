@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom"
 export default function RoomItem(props){
     let {authTokens} =useContext(AuthContext)
     // let [activeRoom,setActiveRoom] = useState([])
-
+    console.log(props.room.id)
     let navigate = useNavigate()
     let joinRoom = async ()=>{
         let response = await fetch(`http://127.0.0.1:8000/api/${props.room.id}/`,{
@@ -18,7 +18,7 @@ export default function RoomItem(props){
         })
 
         let data = await response.json()
-        console.log(data)
+        console.log(data.id)
         // console.log(activeRoom)
         if(response.ok){
 
