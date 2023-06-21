@@ -21,5 +21,4 @@ class CreateRoomSerializer(serializers.ModelSerializer):
 
 class JoinRoomSerializer(serializers.Serializer):
     id_session = serializers.CharField(max_length=50)
-    id = serializers.IntegerField() 
     

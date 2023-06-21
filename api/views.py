@@ -9,7 +9,7 @@ from rest_framework import status
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from users.models import Newuser
-
+from django.http import JsonResponse
 
 # Create your views here.
 
@@ -47,6 +47,7 @@ class CreateRoom(APIView):
                 room.name = name
                 room.votes_to_skip = votes_to_skip
                 room.save(update_fields=["name", "votes_to_skip"])
+                self.request.session['room_key'] = room.id_session
                 return Response(
                     CreateRoomSerializer(room).data, status=status.HTTP_200_OK
                 )
@@ -58,6 +59,7 @@ class CreateRoom(APIView):
                     votes_to_skip=votes_to_skip,
                 )
                 room.save()
+                self.request.session['room_key'] = room.id_session
                 return Response(
                     CreateRoomSerializer(room).data, status=status.HTTP_200_OK
                 )
@@ -81,22 +83,25 @@ class JoinRoom(APIView):
 
         try:
             room = Room.objects.get(id_session=id_session)
-            active_room = id
+            
             listener = Newuser.objects.get(id=self.request.user.id)
-            queryset = room.listeners.filter(active_room=active_room)
-            print(len(queryset))
-            if len(queryset) == 0:
-                active_listener = Listeners(
-                    active_room=room,
-                    listener=listener
-                )
-                active_listener.save()
-            # else:
-            #     active_listeners = queryset[0]
-            #     active_listeners.active_room = active_room
-            #     active_listeners.listener = listener
-            #     active_listeners.save(updated_fields=['active_room','listener'])
-                
+            queryset = room.listeners.filter(listener=self.request.user.id)
+            print(queryset)
+            
+            # check if the room exists
+            # get the listeneres of a room
+            # if it exists we want to access the listeners in the room
+            # if a listener is new we write to the db
+            
+            
+            # print(len(queryset))
+            # if len(queryset) == 0:
+            #     active_listener = Listeners(
+            #         active_room=room,
+            #         listener=listener
+            #     )
+            #     active_listener.save()
+            self.request.session['room_key'] = id_session
             return Response(RoomSerializer(room).data, status=status.HTTP_200_OK)
         except Room.DoesNotExist():
             return Response({"Room does not exist"}, status=status.HTTP_404_NOT_FOUND)
@@ -109,6 +114,15 @@ class JoinRoom(APIView):
         serializer = RoomSerializer(active_room,many=False)   
         
         return Response(serializer.data)
+    
+class UserInRoom(APIView):
+    def get(self,request,format=None):
+        # check to see if room_key exists in user's session
+        data = {
+            'room_key' : self.request.session.get('room_key')
+        }
+        
+        return JsonResponse(data,status=status.HTTP_200_OK)
             
 
 

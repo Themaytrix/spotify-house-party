@@ -7,7 +7,7 @@ export default function ListeningPage(){
     let {authTokens} = useContext(AuthContext)
     let {id} = useParams()
     
-    console.log(id)
+    console.log(id )
 
     let getRoomInfo = async ()=>{
 
