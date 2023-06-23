@@ -17,7 +17,7 @@ export const AuthProvider = ({children}) => {
     let navigate = useNavigate()
 
     let [loading,setLoading] = useState(true)
-    let [room,setRoom] = useState(null)
+    let [room,setRoom] = useState([])
 
     // fetching user data from dj backend
     let loginUser = async (e) =>{
@@ -103,11 +103,10 @@ export const AuthProvider = ({children}) => {
             },
             body: JSON.stringify({'name':e.target.room_name.value, 'votes_to_skip': Number(e.target.votes_to_skip.value)})
         })
-        console.log(Number(e.target.votes_to_skip.value))
         let data = await response.json()
         if(response.status === 200){
             setRoom(data)
-            navigate("/")
+            navigate(`/:${data.id}`)
         }
 
     }

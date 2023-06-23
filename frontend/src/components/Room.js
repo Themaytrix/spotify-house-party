@@ -5,6 +5,7 @@ export default function Room(){
     // setting states for rooms
     let [rooms,setRooms] = useState([])
     let {authTokens} = useContext(AuthContext) 
+    console.log(rooms)
     // console.log(authTokens)
     let getRooms = async ()=>{
         let response = await fetch('http://127.0.0.1:8000/api/',{

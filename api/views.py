@@ -49,7 +49,7 @@ class CreateRoom(APIView):
                 room.save(update_fields=["name", "votes_to_skip"])
                 self.request.session['room_key'] = room.id_session
                 return Response(
-                    CreateRoomSerializer(room).data, status=status.HTTP_200_OK
+                    RoomSerializer(room).data, status=status.HTTP_200_OK
                 )
             else:
                 room = Room(
@@ -61,7 +61,7 @@ class CreateRoom(APIView):
                 room.save()
                 self.request.session['room_key'] = room.id_session
                 return Response(
-                    CreateRoomSerializer(room).data, status=status.HTTP_200_OK
+                    RoomSerializer(room).data, status=status.HTTP_200_OK
                 )
 
         return Response(
