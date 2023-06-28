@@ -63,6 +63,7 @@ export const AuthProvider = ({children}) => {
         setAuthTokens(null)
         setUser(null)
         localStorage.removeItem('authTokens')
+        localStorage.removeItem('room_key')
         navigate('/login')
 
     }
@@ -106,7 +107,8 @@ export const AuthProvider = ({children}) => {
         let data = await response.json()
         if(response.status === 200){
             setRoom(data)
-            navigate(`/:${data.id}`)
+            localStorage.setItem('room_key',data.id_session)
+            navigate(`/:${data.id_session}`)
         }
 
     }
@@ -130,7 +132,7 @@ export const AuthProvider = ({children}) => {
             updateToken()
         }
 
-        let refresTime = 1000 * 60 * 4
+        let refresTime = 1000 * 60 * 15
         let interval = setInterval(()=>{
             if(authTokens){
                 updateToken()
