@@ -8,18 +8,18 @@ from .util import update_or_create_user_tokens,is_spotify_authenticated
 # Create your views here.
 
 class AuthUrl(APIView):
-    # generating the url for authentication
+    # generating the url for the frontend to use for authentication
     def get(self,requests,format=None):
         scopes = 'user-read-playback-state user-modify-playback-state user-read-curently-playing'
         
-        url = Request('GET','http://accounts.spotify.com/authorize',params={
+        url = Request('GET','https://accounts.spotify.com/authorize',params={
             'scope':scopes,
             'response_type':'code',
             'redirect_uri':REDIRECT_URI,
             'client_id':CLIENT_ID,
         }).prepare().url
-        
-        return Response({'url':url}, status=status.HTTP_200_OK)
+        print(url)
+        return Response({"url":url}, status=status.HTTP_200_OK)
     
 
     
@@ -27,7 +27,7 @@ def spotify_callback(request,format=None):
     code = request.GET.get('code')
     error = request.GET.get('error')
     # sending a post containing the code for the spotify token to the generated url
-    response = post('http://accounts.spotify.com/api/token',data={
+    response = post('https://accounts.spotify.com/api/token',data={
         'grant_type':'authorization_code',
         'code':code,
         'redirect_uri':REDIRECT_URI,

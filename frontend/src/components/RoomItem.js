@@ -1,10 +1,9 @@
-import { useContext,useState} from "react"
+import { useContext} from "react"
 import AuthContext from "../context/AuthContext"
 import { useNavigate } from "react-router-dom"
 
 export default function RoomItem(props){
     let {authTokens} =useContext(AuthContext)
-    // let [activeRoom,setActiveRoom] = useState([])
 
     let navigate = useNavigate()
     let joinRoom = async (e)=>{

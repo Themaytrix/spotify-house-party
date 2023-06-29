@@ -4,25 +4,55 @@ import AuthContext from "../context/AuthContext"
 
 export default function ListeningPage(){
     let [activeRoom, setActiveRoom] = useState([])
+    let [spotifyAuthenticated,setSpotifyAuthenticated] = useState(false)
     let {authTokens,user} = useContext(AuthContext)
     let {id} = useParams()
     let navigate = useNavigate()
 
+    let getOptions = {
+        method:'GET',
+        headers:{
+            'Content-Type':'application/json',
+            'Authorization': 'Bearer ' + String(authTokens.access)
+        },
+    }
+
     let getRoomInfo = async ()=>{
 
-        let response = await fetch(`http://127.0.0.1:8000/api/${id}`,{
-            method:'GET',
-            headers:{
-                'Content-Type':'application/json',
-                'Authorization': 'Bearer ' + String(authTokens.access)
-            },
-        })
+        let response = await fetch(`http://127.0.0.1:8000/api/${id}/`,getOptions)
 
         let data = await response.json()
         if(response.ok){
             setActiveRoom(data)
+            spotifyAuthenticate()
+            if(!spotifyAuthenticated){
+                // get auth url
+                getAuthUrl()
+            }
+
         }
     }
+
+    let getAuthUrl = async ()=>{
+        let response = await fetch('http://127.0.0.1:8000/spotify/get-auth-url/',getOptions)
+        
+        let data = await response.json()
+        if(response.ok){
+            console.log(data)
+            // Window.location.replace(url)
+            
+        }
+    }
+
+    let spotifyAuthenticate = async ()=>{
+        let response = await fetch('http://127.0.0.1:8000/spotify/is-authenticated/',getOptions)
+
+        let data = await response.json()
+        if(response.ok){
+            setSpotifyAuthenticated(data.status)
+        }
+    }
+
 
     let leaveRoom = async (e)=>{
         e.preventDefault()
