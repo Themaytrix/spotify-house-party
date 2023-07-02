@@ -10,7 +10,7 @@ from .util import update_or_create_user_tokens,is_spotify_authenticated
 class AuthUrl(APIView):
     # generating the url for the frontend to use for authentication
     def get(self,requests,format=None):
-        scopes = 'user-read-playback-state user-modify-playback-state user-read-curently-playing'
+        scopes = 'user-read-playback-state user-modify-playback-state '
         
         url = Request('GET','https://accounts.spotify.com/authorize',params={
             'scope':scopes,
@@ -23,29 +23,30 @@ class AuthUrl(APIView):
     
 
     
-def spotify_callback(request,format=None):
-    code = request.GET.get('code')
-    error = request.GET.get('error')
-    # sending a post containing the code for the spotify token to the generated url
-    response = post('https://accounts.spotify.com/api/token',data={
-        'grant_type':'authorization_code',
-        'code':code,
-        'redirect_uri':REDIRECT_URI,
-        'client_id':CLIENT_ID,
-        'client_secret':CLIENT_SECRET,
+class SpotifyCallback(APIView):
+    def get(self,request,format=None):
+        code = request.GET.get('code')
+        error = request.GET.get('error')
+        # sending a post containing the code for the spotify token to the generated url
+        response = post('https://accounts.spotify.com/api/token',data={
+            'grant_type':'authorization_code',
+            'code':code,
+            'redirect_uri':REDIRECT_URI,
+            'client_id':CLIENT_ID,
+            'client_secret':CLIENT_SECRET,
+            
+        }).json()
         
-    }).json()
-    
-    access_token = response.get('access_token')
-    token_type = response.get('token_type')
-    refresh_token = response.get('refresh_token')
-    eexpires_in = response.get('expires_in')
-    
-    if not request.session.exists(request.session.session_key):
-        request.session.create()
-    update_or_create_user_tokens(request.session.session_key,access_token,token_type,eexpires_in,refresh_token)
-    
-    return redirect({'frontend:'})
+        access_token = response.get('access_token')
+        token_type = response.get('token_type')
+        refresh_token = response.get('refresh_token')
+        eexpires_in = response.get('expires_in')
+        
+        if not request.session.exists(request.session.session_key):
+            request.session.create()
+        update_or_create_user_tokens(request.session.session_key,access_token,token_type,eexpires_in,refresh_token)
+        
+        return Response({"message":"User Authenticated by Spotify"})
 
 
 class IsAunthenticated(APIView):
@@ -53,3 +54,8 @@ class IsAunthenticated(APIView):
         is_authenticated = is_spotify_authenticated(self.request.session.session_key)
         
         return Response({'status':is_authenticated}, status=status.HTTP_200_OK)
+    
+# music controller
+
+class CurrentSong(APIView):
+    

@@ -7,6 +7,7 @@ export default function ListeningPage(){
     let [spotifyAuthenticated,setSpotifyAuthenticated] = useState(false)
     let {authTokens,user} = useContext(AuthContext)
     let {id} = useParams()
+    let isHost = activeRoom.host === user.user_id ? true : false
     let navigate = useNavigate()
 
     let getOptions = {
@@ -24,11 +25,16 @@ export default function ListeningPage(){
         let data = await response.json()
         if(response.ok){
             setActiveRoom(data)
-            spotifyAuthenticate()
-            if(!spotifyAuthenticated){
-                // get auth url
-                getAuthUrl()
+            if(isHost){
+
+                spotifyAuthenticate()
+                if(!spotifyAuthenticated){
+                    // get auth url
+                    getAuthUrl()
+                    
+                }
             }
+            
 
         }
     }
@@ -38,8 +44,8 @@ export default function ListeningPage(){
         
         let data = await response.json()
         if(response.ok){
-            console.log(data)
-            // Window.location.replace(url)
+            console.log(data.url)
+            window.location.replace(`${data.url}`)
             
         }
     }
@@ -98,7 +104,7 @@ export default function ListeningPage(){
         <div>
             <h3>{activeRoom.name}</h3>
 
-            {activeRoom.host === user.user_id ? 
+            { isHost ? 
             <div>
                 <button onClick={endRoom}>End Room</button>
             </div> : <div>
