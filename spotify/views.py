@@ -4,7 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from requests import Request,post
-from .util import update_or_create_user_tokens,is_spotify_authenticated
+from .util import *
+from .serializers import SpotifySerializer,IsAuthenticatedSerializer
 # Create your views here.
 
 class AuthUrl(APIView):
@@ -24,8 +25,14 @@ class AuthUrl(APIView):
 
     
 class SpotifyCallback(APIView):
-    def get(self,request,format=None):
-        code = request.GET.get('code')
+    def post(self,request,format=None):
+        serializer = SpotifySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        code = serializer.validated_data.get('code')
+        print(code)
+        id_session = serializer.validated_data.get('id_session')
+        
         error = request.GET.get('error')
         # sending a post containing the code for the spotify token to the generated url
         response = post('https://accounts.spotify.com/api/token',data={
@@ -36,26 +43,34 @@ class SpotifyCallback(APIView):
             'client_secret':CLIENT_SECRET,
             
         }).json()
-        
+        print(response)
         access_token = response.get('access_token')
         token_type = response.get('token_type')
         refresh_token = response.get('refresh_token')
-        eexpires_in = response.get('expires_in')
+        expires_in = response.get('expires_in')
+        print(refresh_token)
         
-        if not request.session.exists(request.session.session_key):
-            request.session.create()
-        update_or_create_user_tokens(request.session.session_key,access_token,token_type,eexpires_in,refresh_token)
+    
+        update_or_create_user_tokens(id_session,access_token,token_type,expires_in,refresh_token)
         
         return Response({"message":"User Authenticated by Spotify"})
 
 
 class IsAunthenticated(APIView):
-    def get(self,requst,format=None):
-        is_authenticated = is_spotify_authenticated(self.request.session.session_key)
+    def post(self,request,format=None):
+        serializer = IsAuthenticatedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id_session = serializer.validated_data.get('id_session')
+        is_authenticated = is_spotify_authenticated(id_session)
         
         return Response({'status':is_authenticated}, status=status.HTTP_200_OK)
     
 # music controller
 
 class CurrentSong(APIView):
-    
+    def get(self,request,format=None):
+        # get session_id from front end
+        # use session_id to get the host
+        endpoint = "player/currently-playing"
+        
+        pass

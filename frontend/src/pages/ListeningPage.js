@@ -4,9 +4,10 @@ import AuthContext from "../context/AuthContext"
 
 export default function ListeningPage(){
     let [activeRoom, setActiveRoom] = useState([])
-    let [spotifyAuthenticated,setSpotifyAuthenticated] = useState(false)
+    let [spotifyAuthenticated,setSpotifyAuthenticated] = useState(()=>(Boolean(localStorage.getItem('spotify_authenticated'))))
     let {authTokens,user} = useContext(AuthContext)
     let {id} = useParams()
+    
     let isHost = activeRoom.host === user.user_id ? true : false
     let navigate = useNavigate()
 
@@ -51,11 +52,21 @@ export default function ListeningPage(){
     }
 
     let spotifyAuthenticate = async ()=>{
-        let response = await fetch('http://127.0.0.1:8000/spotify/is-authenticated/',getOptions)
+        let response = await fetch('http://127.0.0.1:8000/spotify/is-authenticated/',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer ' + String(authTokens.access)
+            },
+            body: JSON.stringify({'id_session':localStorage.getItem('room_key')})
+
+        })
 
         let data = await response.json()
         if(response.ok){
-            setSpotifyAuthenticated(data.status)
+            console.log(data.status)
+            localStorage.setItem('spotify_authenticated',data.status)
+            
         }
     }
 
@@ -95,11 +106,17 @@ export default function ListeningPage(){
     }
 
 
+
+    // getting room info
     useEffect(()=>{
         getRoomInfo()
         
     },[activeRoom.name])
 
+    //spotify api 
+    useEffect(()=>{
+
+    })
     return(
         <div>
             <h3>{activeRoom.name}</h3>

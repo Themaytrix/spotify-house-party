@@ -64,6 +64,7 @@ export const AuthProvider = ({children}) => {
         setUser(null)
         localStorage.removeItem('authTokens')
         localStorage.removeItem('room_key')
+        localStorage.removeItem('spotify_authenticated')
         navigate('/login')
 
     }
