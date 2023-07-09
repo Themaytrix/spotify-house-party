@@ -94,6 +94,7 @@ def spotify_api_calls(session_id, endpoint, post_=False, put_=False):
         put(BASE_URL + endpoint, headers=headers)
 
     response = get(BASE_URL + endpoint, {}, headers=headers)
+    print(response)
 
     try:
         return response.json()

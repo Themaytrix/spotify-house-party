@@ -6,6 +6,7 @@ from rest_framework import status
 from requests import Request,post
 from .util import *
 from .serializers import SpotifySerializer,IsAuthenticatedSerializer
+from api.models import Room
 # Create your views here.
 
 class AuthUrl(APIView):
@@ -68,9 +69,51 @@ class IsAunthenticated(APIView):
 # music controller
 
 class CurrentSong(APIView):
-    def get(self,request,format=None):
+    def post(self,request,format=None):
         # get session_id from front end
+        serializer = IsAuthenticatedSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        id_session = serializer.validated_data.get('id_session')
+        id_session = id_session[1:]
+        room = Room.objects.filter(id_session=id_session)
+        # if room.exists():
+            
+        #     room = room[0]
+        # else:
+        #     return Response({},status=status.HTTP_404_NOT_FOUND)
+
         # use session_id to get the host
-        endpoint = "player/currently-playing"
+        endpoint = "player/currently-playing/"
+        response = spotify_api_calls(id_session,endpoint)
         
-        pass
+        if 'error' in response or not 'item' in response:
+            return Response({},status=status.HTTP_204_NO_CONTENT)
+        
+        item = response.get('item')
+        duration = item.get('duration_ms')
+        progress = response.get('progress_ms')
+        album_cover = item.get('album').get('images')[0].get('url')
+        is_playing = response.get('is_playing')
+        song_id = item.get('id')
+        artist_name_string = ""
+        
+        for i, artist in enumerate(item.get('artists')):
+            if i > 0:
+                artist_name_string += ", "
+            name = artist.get('name')
+            artist_name_string += name
+            
+        song = {
+            'title': item.get('name'),
+            'artist': artist_name_string,
+            'duration': duration,
+            'time': progress,
+            'image_url': album_cover,
+            'is_playing': is_playing,
+            'id': song_id
+        }
+                
+        
+        
+        
+        return Response(song,status=status.HTTP_200_OK)

@@ -7,6 +7,7 @@ export default function ListeningPage(){
     let [spotifyAuthenticated,setSpotifyAuthenticated] = useState(()=>(Boolean(localStorage.getItem('spotify_authenticated'))))
     let {authTokens,user} = useContext(AuthContext)
     let {id} = useParams()
+    let roomCalled = false
     
     let isHost = activeRoom.host === user.user_id ? true : false
     let navigate = useNavigate()
@@ -29,10 +30,11 @@ export default function ListeningPage(){
             if(isHost){
 
                 spotifyAuthenticate()
+            
                 if(!spotifyAuthenticated){
                     // get auth url
                     getAuthUrl()
-                    
+    
                 }
             }
             
@@ -105,18 +107,37 @@ export default function ListeningPage(){
         }
     }
 
+    let getPlaying = async ()=>{
+        let response = await fetch('http://127.0.0.1:8000/spotify/playing/',{
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json',
+                'Authorization': 'Bearer ' + String(authTokens.access)
+            },
+            body:JSON.stringify({"id_session":id})
+        })
+
+        let data = await response.json()
+        if(response.ok){
+            console.log(data)
+        }
+    }
+
 
 
     // getting room info
     useEffect(()=>{
+
         getRoomInfo()
         
+        return ()=> roomCalled = true
     },[activeRoom.name])
 
+ 
     //spotify api 
     useEffect(()=>{
-
-    })
+        getPlaying()
+    },[roomCalled])
     return(
         <div>
             <h3>{activeRoom.name}</h3>
