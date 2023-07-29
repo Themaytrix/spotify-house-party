@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react"
 import { useParams,useNavigate } from "react-router-dom"
 import AuthContext from "../context/AuthContext"
+import Player from "../components/Player"
 
 export default function ListeningPage(){
     let [activeRoom, setActiveRoom] = useState([])
@@ -30,6 +31,9 @@ export default function ListeningPage(){
             if(isHost){
 
                 spotifyAuthenticate()
+                if(spotifyAuthenticated){
+                    streamSong()
+                }
             
                 if(!spotifyAuthenticated){
                     // get auth url
@@ -107,20 +111,35 @@ export default function ListeningPage(){
         }
     }
 
-    let getPlaying = async ()=>{
-        let response = await fetch('http://127.0.0.1:8000/spotify/playing/',{
-            method:'POST',
-            headers:{
-                'Content-Type':'application/json',
+    // let getPlaying = async ()=>{
+    //     let response = await fetch(`http://127.0.0.1:8000/spotify/${id}`,{
+    //         method:'GET',
+    //         headers:{
+    //             'Content-Type':'application/json',
+    //             'Authorization': 'Bearer ' + String(authTokens.access)
+    //         },
+    //     })
+
+    //     let data = await response.json()
+    //     console.log(data)
+    //     if(response.ok){
+    //         console.log(data)
+    //     }else{
+    //         console.log(data)
+    //     }
+    // }
+
+    let streamSong = ()=>{
+        const eventSource = new EventSource(`http://127.0.0.1:8000/spotify/${id}`,{
+            headers: {
                 'Authorization': 'Bearer ' + String(authTokens.access)
-            },
-            body:JSON.stringify({"id_session":id})
+            }
         })
 
-        let data = await response.json()
-        if(response.ok){
-            console.log(data)
+        eventSource.onmessage = (e)=>{
+            console.log(e)
         }
+
     }
 
 
@@ -135,9 +154,9 @@ export default function ListeningPage(){
 
  
     //spotify api 
-    useEffect(()=>{
-        getPlaying()
-    },[roomCalled])
+    // useEffect(()=>{
+    //     getPlaying()
+    // },[roomCalled])
     return(
         <div>
             <h3>{activeRoom.name}</h3>
@@ -149,6 +168,11 @@ export default function ListeningPage(){
                 <button onClick={leaveRoom}>Leave Room</button>
             </div>
             }
+
+            {/* <div>
+                <Player roomId={id}
+                />
+            </div> */}
         </div>
     )
 }

@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.http import StreamingHttpResponse
 from .credentials import CLIENT_ID,CLIENT_SECRET,REDIRECT_URI
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,6 +9,7 @@ from .util import *
 from .serializers import SpotifySerializer,IsAuthenticatedSerializer
 from api.models import Room
 # Create your views here.
+
 
 class AuthUrl(APIView):
     # generating the url for the frontend to use for authentication
@@ -69,51 +71,16 @@ class IsAunthenticated(APIView):
 # music controller
 
 class CurrentSong(APIView):
-    def post(self,request,format=None):
+    def get(self,request,pk,format=None):
         # get session_id from front end
-        serializer = IsAuthenticatedSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        id_session = serializer.validated_data.get('id_session')
-        id_session = id_session[1:]
-        room = Room.objects.filter(id_session=id_session)
-        # if room.exists():
-            
-        #     room = room[0]
-        # else:
-        #     return Response({},status=status.HTTP_404_NOT_FOUND)
-
-        # use session_id to get the host
+        id_session = pk[1:]
         endpoint = "player/currently-playing/"
-        response = spotify_api_calls(id_session,endpoint)
+        # i want to be hitting this end point while sth is true.
+        # yield when time to expire elapses
         
-        if 'error' in response or not 'item' in response:
-            return Response({},status=status.HTTP_204_NO_CONTENT)
+        response = StreamingHttpResponse(playback_stream(id_session,endpoint),content_type='text/event-stream')
+        print(response)
         
-        item = response.get('item')
-        duration = item.get('duration_ms')
-        progress = response.get('progress_ms')
-        album_cover = item.get('album').get('images')[0].get('url')
-        is_playing = response.get('is_playing')
-        song_id = item.get('id')
-        artist_name_string = ""
-        
-        for i, artist in enumerate(item.get('artists')):
-            if i > 0:
-                artist_name_string += ", "
-            name = artist.get('name')
-            artist_name_string += name
-            
-        song = {
-            'title': item.get('name'),
-            'artist': artist_name_string,
-            'duration': duration,
-            'time': progress,
-            'image_url': album_cover,
-            'is_playing': is_playing,
-            'id': song_id
-        }
-                
-        
-        
-        
-        return Response(song,status=status.HTTP_200_OK)
+        return response
+
+
