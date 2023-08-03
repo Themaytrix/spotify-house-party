@@ -130,14 +130,10 @@ export default function ListeningPage(){
     // }
 
     let streamSong = ()=>{
-        const eventSource = new EventSource(`http://127.0.0.1:8000/spotify/${id}`,{
-            headers: {
-                'Authorization': 'Bearer ' + String(authTokens.access)
-            }
-        })
+        const eventSource = new WebSocket(`ws://127.0.0.1:8000/spotify/${id}/`)
 
-        eventSource.onmessage = (e)=>{
-            console.log(e)
+        eventSource.onopen = (e) =>{
+            console.log('hmmm')
         }
 
     }

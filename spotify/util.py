@@ -109,6 +109,8 @@ def playback_stream(id_session,endpoint):
     initial_data = ""
     
     while True:
+        
+        time.sleep(1)
         response = spotify_api_calls(session_id=id_session,endpoint=endpoint)
         
         if 'item' in response:
@@ -138,9 +140,8 @@ def playback_stream(id_session,endpoint):
             
        
         data = json.dumps(response,cls=DjangoJSONEncoder)
-    
         if not initial_data == data:
             yield "\ndata: " + "{}\n\n".format(data)
             initial_data = data
             
-        time.sleep(1)
+        
