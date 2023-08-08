@@ -70,17 +70,18 @@ class IsAunthenticated(APIView):
     
 # music controller
 
-class CurrentSong(APIView):
-    def get(self,request,pk,format=None):
-        # get session_id from front end
-        id_session = pk[1:]
-        endpoint = "player/currently-playing/"
-        # i want to be hitting this end point while sth is true.
-        # yield when time to expire elapses
+# class CurrentSong(APIView):
+#     def get(self,request,pk,format=None):
+#         # get session_id from front end
+#         id_session = pk[1:]
+#         endpoint = "player/currently-playing/"
+#         # i want to be hitting this end point while sth is true.
+#         # yield when time to expire elapses
         
-        response = StreamingHttpResponse(playback_stream(id_session,endpoint),content_type='text/event-stream')
-        print(response)
+
         
-        return response
+#         response = spotify_api_calls(session_id=id_session,endpoint=endpoint)
+        
+        
 
 

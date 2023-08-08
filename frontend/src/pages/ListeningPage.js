@@ -130,10 +130,20 @@ export default function ListeningPage(){
     // }
 
     let streamSong = ()=>{
-        const eventSource = new WebSocket(`ws://127.0.0.1:8000/spotify/${id}/`)
+        const streamSocket = new WebSocket(`ws://127.0.0.1:8000/spotify/${id}/`)
 
-        eventSource.onopen = (e) =>{
+        streamSocket.onopen = (e) =>{
             console.log('hmmm')
+            streamSocket.send(JSON.stringify({
+                'message': true
+            }))
+
+        streamSocket.onmessage = (e) =>{
+            console.log("receiving...")
+            const data = JSON.parse(e.data)
+            console.log(data)
+        }
+
         }
 
     }

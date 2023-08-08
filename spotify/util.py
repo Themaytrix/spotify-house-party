@@ -138,7 +138,6 @@ def playback_stream(id_session,endpoint):
                 'id': song_id
             }
             
-       
         data = json.dumps(response,cls=DjangoJSONEncoder)
         if not initial_data == data:
             yield "\ndata: " + "{}\n\n".format(data)
