@@ -30,40 +30,6 @@ class SpotifyConsumer(WebsocketConsumer):
         
         data = json.loads(text_data)
         _stream = data['message']
-        print(_stream)
-        
-        # while True:
-                
-        #     response = spotify_api_calls(session_id=id_session,endpoint=endpoint)
-            
-        #     if 'item' in response:
-        #         item = response.get('item')
-        #         duration = item.get('duration_ms')
-        #         progress = response.get('progress_ms')
-        #         album_cover = item.get('album').get('images')[0].get('url')
-        #         is_playing = response.get('is_playing')
-        #         song_id = item.get('id')
-        #         artist_name_string = ""
-            
-        #     for i, artist in enumerate(item.get('artists')):
-        #         if i > 0:
-        #             artist_name_string += ", "
-        #         name = artist.get('name')
-        #         artist_name_string += name
-                
-        #     response = {
-        #         'title': item.get('name'),
-        #         'artist': artist_name_string,
-        #         'duration': duration,
-        #         'time': progress,
-        #         'image_url': album_cover,
-        #         'is_playing': is_playing,
-        #         'id': song_id
-        #     }
-        #     print(response)
-            
-            
-            # return async_to_sync(self.channel_layer.group_send)(self.room_group_name,{"type": "send_stream","message": response})
         message = {
             "id": id_session,
             "can_stream": _stream
