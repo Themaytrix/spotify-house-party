@@ -1,5 +1,6 @@
 from channels.generic.websocket import  WebsocketConsumer
 from asgiref.sync import async_to_sync,sync_to_async
+from channels.exceptions import StopConsumer
 
 from .util import spotify_api_calls
 import json
@@ -86,6 +87,9 @@ class SpotifyConsumer(WebsocketConsumer):
         while can_stream:
             response = spotify_api_calls(session_id=id_session,endpoint=endpoint)
             
+            if "error" in response or "item" not in response:
+                return self.send(text_data=json.dumps({"message":{}}))
+            
             if 'item' in response:
                 item = response.get('item')
                 duration = item.get('duration_ms')
@@ -119,3 +123,4 @@ class SpotifyConsumer(WebsocketConsumer):
     def disconnect(self, code):
         async_to_sync(self.channel_layer.group_discard)(self.room_group_name,self.channel_name)
         
+        raise StopConsumer()

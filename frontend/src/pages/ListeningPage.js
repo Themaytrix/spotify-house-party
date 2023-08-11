@@ -40,6 +40,8 @@ export default function ListeningPage(){
                     getAuthUrl()
     
                 }
+            }else{
+                streamSong()
             }
             
 
@@ -111,23 +113,6 @@ export default function ListeningPage(){
         }
     }
 
-    // let getPlaying = async ()=>{
-    //     let response = await fetch(`http://127.0.0.1:8000/spotify/${id}`,{
-    //         method:'GET',
-    //         headers:{
-    //             'Content-Type':'application/json',
-    //             'Authorization': 'Bearer ' + String(authTokens.access)
-    //         },
-    //     })
-
-    //     let data = await response.json()
-    //     console.log(data)
-    //     if(response.ok){
-    //         console.log(data)
-    //     }else{
-    //         console.log(data)
-    //     }
-    // }
 
     let streamSong = ()=>{
         const streamSocket = new WebSocket(`ws://127.0.0.1:8000/spotify/${id}/`)
